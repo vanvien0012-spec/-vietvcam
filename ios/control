@@ -1,0 +1,10 @@
+Package: com.vanvi.vietvcam
+Name: VietVCam
+Version: 1.0.0
+Architecture: iphoneos-arm64
+Description: Standalone VietVCam app with RTMP source and on-device controls.
+Maintainer: vanvi
+Author: vanvi
+Section: Utilities
+Depends: firmware (>= 15.0)
+Tag: role::enduser

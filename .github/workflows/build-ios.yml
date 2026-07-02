@@ -1,0 +1,64 @@
+name: Build VietVCam iOS
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - "ios/**"
+      - "scripts/build_sileo_repo.sh"
+      - ".github/workflows/build-ios.yml"
+
+jobs:
+  build-ios:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Theos
+        run: |
+          export THEOS="${{ github.workspace }}/theos"
+          echo "THEOS=${THEOS}" >> "${GITHUB_ENV}"
+          git clone --recursive --depth 1 https://github.com/theos/theos.git "${THEOS}"
+          git clone --depth 1 https://github.com/theos/sdks.git "${THEOS}/sdks"
+
+      - name: Build iOS package
+        working-directory: ios
+        run: |
+          make clean package FINALPACKAGE=1
+
+      - name: Upload .deb artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vietvcam-ios-deb
+          path: ios/packages/*.deb
+          if-no-files-found: error
+
+  build-sileo-repo:
+    needs: build-ios
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download iOS package
+        uses: actions/download-artifact@v4
+        with:
+          name: vietvcam-ios-deb
+          path: dist/
+
+      - name: Install repo tools
+        run: sudo apt-get update && sudo apt-get install -y dpkg-dev
+
+      - name: Build Sileo repository
+        run: |
+          chmod +x scripts/build_sileo_repo.sh
+          sed -i 's/\r$//' scripts/build_sileo_repo.sh
+          ./scripts/build_sileo_repo.sh
+
+      - name: Upload Sileo repo artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vietvcam-sileo-repo
+          path: repo-sileo/

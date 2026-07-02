@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+if ! getent group vietvcam >/dev/null 2>&1; then
+  addgroup --system vietvcam || true
+fi
+if ! id -u vietvcam >/dev/null 2>&1; then
+  adduser --system --ingroup vietvcam --home /nonexistent --no-create-home vietvcam || true
+fi
+mkdir -p /var/log/vietvcam
+chmod 755 /var/log/vietvcam
+mkdir -p /var/lib/vietvcam/uploads
+mkdir -p /var/lib/vietvcam/rtmp
+chmod 755 /var/lib/vietvcam
+chmod 755 /var/lib/vietvcam/uploads
+chmod 755 /var/lib/vietvcam/rtmp
+chown -R vietvcam:vietvcam /var/log/vietvcam /var/lib/vietvcam
+if [ ! -f /etc/default/vietvcam ]; then
+  cat > /etc/default/vietvcam << 'EOF'
+VIETVCAM_HOST=127.0.0.1
+VIETVCAM_PORT=8080
+VIETVCAM_UPLOAD_TOKEN=change_me
+VIETVCAM_MEDIA_RETENTION_HOURS=72
+VIETVCAM_MEDIA_MAX_TOTAL_GB=20
+EOF
+  chmod 640 /etc/default/vietvcam
+fi
+systemctl daemon-reload || true
+systemctl enable vietvcam.service || true
+systemctl restart vietvcam.service || true

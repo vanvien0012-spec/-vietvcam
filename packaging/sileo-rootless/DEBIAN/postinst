@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+PREF_DIR="/var/jb/var/mobile/Library/Preferences"
+PREF_FILE="${PREF_DIR}/com.vanvi.vietvcam.conf"
+
+mkdir -p "${PREF_DIR}"
+if [ ! -f "${PREF_FILE}" ]; then
+  cat > "${PREF_FILE}" <<'EOF'
+VIETVCAM_CONTROL_URL=http://127.0.0.1:8080/control
+EOF
+fi
+
+echo "VietVCam Control installed."
+echo "Edit ${PREF_FILE} to your server URL if needed."
+exit 0

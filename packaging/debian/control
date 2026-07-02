@@ -1,0 +1,9 @@
+Package: vietvcam
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: all
+Maintainer: vanvi <you@example.com>
+Depends: python3 (>= 3.10), ffmpeg, adduser
+Description: VietVCam stable Python service
+ Production-ready VietVCam service packaged for Debian/Ubuntu.

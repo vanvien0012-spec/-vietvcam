@@ -1,0 +1,23 @@
+#!/bin/sh
+set -eu
+
+PREF_FILE="/var/jb/var/mobile/Library/Preferences/com.vanvi.vietvcam.conf"
+URL="http://127.0.0.1:8080/control"
+
+if [ -f "${PREF_FILE}" ]; then
+  # shellcheck disable=SC1090
+  . "${PREF_FILE}"
+fi
+
+if [ -n "${VIETVCAM_CONTROL_URL:-}" ]; then
+  URL="${VIETVCAM_CONTROL_URL}"
+fi
+
+if command -v uiopen >/dev/null 2>&1; then
+  uiopen "${URL}"
+  exit 0
+fi
+
+echo "uiopen not found. Open this URL manually:"
+echo "${URL}"
+exit 1

@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+systemctl stop vietvcam.service || true
+systemctl disable vietvcam.service || true
+systemctl daemon-reload || true

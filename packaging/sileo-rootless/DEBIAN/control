@@ -1,0 +1,10 @@
+Package: com.vanvi.vietvcam
+Name: VietVCam Control
+Version: 1.0.0
+Architecture: iphoneos-arm64
+Description: VietVCam iPhone control panel launcher for jailbroken devices.
+Maintainer: vanvi
+Author: vanvi
+Section: Utilities
+Depends: firmware (>= 15.0)
+Tag: role::enduser

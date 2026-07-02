@@ -1,0 +1,29 @@
+[Unit]
+Description=VietVCam service
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=vietvcam
+Group=vietvcam
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONPATH=/opt/vietvcam/src
+EnvironmentFile=-/etc/default/vietvcam
+ExecStart=/usr/local/bin/vietvcam
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/vietvcam /var/log/vietvcam
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=true
+MemoryDenyWriteExecute=true
+
+[Install]
+WantedBy=multi-user.target

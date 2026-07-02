@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vietvcam"
+version = "1.0.0"
+description = "Stable Python service packaged as a Debian app"
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "vanvi" }]
+dependencies = [
+  "fastapi>=0.115.0,<1.0.0",
+  "uvicorn>=0.30.0,<1.0.0",
+  "python-multipart>=0.0.9,<1.0.0"
+]
+
+[project.scripts]
+vietvcam = "vietvcam.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
