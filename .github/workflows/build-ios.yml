@@ -9,24 +9,48 @@ on:
       - "scripts/build_sileo_repo.sh"
       - ".github/workflows/build-ios.yml"
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  THEOS: ${{ github.workspace }}/theos
+
 jobs:
   build-ios:
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
-      - name: Checkout
+      - name: Checkout project
         uses: actions/checkout@v4
 
       - name: Setup Theos
+        uses: actions/checkout@v4
+        with:
+          repository: theos/theos
+          ref: master
+          path: theos
+          submodules: recursive
+
+      - name: Cache iOS SDK
+        id: cache-sdk
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.THEOS }}/sdks/iPhoneOS16.5.sdk
+          key: sdk-iphoneos16.5-v1
+
+      - name: Download iOS SDK
+        if: steps.cache-sdk.outputs.cache-hit != 'true'
         run: |
-          export THEOS="${{ github.workspace }}/theos"
-          echo "THEOS=${THEOS}" >> "${GITHUB_ENV}"
-          git clone --recursive --depth 1 https://github.com/theos/theos.git "${THEOS}"
-          git clone --depth 1 https://github.com/theos/sdks.git "${THEOS}/sdks"
+          mkdir -p "${THEOS}/sdks"
+          curl -fL -o sdk.tar.xz \
+            https://github.com/theos/sdks/releases/download/master-146e41f/iPhoneOS16.5.sdk.tar.xz
+          tar -xJf sdk.tar.xz -C "${THEOS}/sdks"
+          rm -f sdk.tar.xz
+
+      - name: Install build tools
+        run: brew install ldid
 
       - name: Build iOS package
         working-directory: ios
         run: |
-          make clean package FINALPACKAGE=1
+          make clean package FINALPACKAGE=1 SYSROOT="${THEOS}/sdks/iPhoneOS16.5.sdk"
 
       - name: Upload .deb artifact
         uses: actions/upload-artifact@v4
